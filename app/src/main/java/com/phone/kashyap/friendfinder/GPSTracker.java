@@ -44,41 +44,38 @@ public class GPSTracker extends Service implements LocationListener
 		getLocation();
 	}
 
+	public GPSTracker(Context context)
+	{
+		_context = context;
+		_textViewLocation = null;
+		_textViewAddress = null;
+		_progressBar = null;
+		getLocation();
+	}
+
 	private Location getLocation()
 	{
 		Log.i(LOG_TAG, "getLocation()");
 		try
 		{
 			locationManager = (LocationManager) _context.getSystemService(LOCATION_SERVICE);
-
 			isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
 			isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-
-			if (!isGPSEnabled && !isNetworkEnabled)
-			{
-
-			} else
+			if (isGPSEnabled || isNetworkEnabled)
 			{
 				this.canGetLocation = true;
-
 				if (isNetworkEnabled)
 				{
-
 					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
 					if (locationManager != null)
 					{
 						location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
 						if (location != null)
 						{
-
 							latitude = location.getLatitude();
 							longitude = location.getLongitude();
 						}
 					}
-
 				}
 
 				if (isGPSEnabled)
@@ -86,11 +83,9 @@ public class GPSTracker extends Service implements LocationListener
 					if (location == null)
 					{
 						locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
-
 						if (locationManager != null)
 						{
 							location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
 							if (location != null)
 							{
 								latitude = location.getLatitude();
@@ -117,7 +112,6 @@ public class GPSTracker extends Service implements LocationListener
 			locationManager.removeUpdates(GPSTracker.this);
 		}
 	}
-
 	public double getLatitude()
 	{
 		if (location != null)
@@ -126,17 +120,14 @@ public class GPSTracker extends Service implements LocationListener
 		}
 		return latitude;
 	}
-
 	public double getLongitude()
 	{
 		if (location != null)
 		{
 			longitude = location.getLongitude();
 		}
-
 		return longitude;
 	}
-
 	public boolean canGetLocation()
 	{
 		return this.canGetLocation;
@@ -145,11 +136,8 @@ public class GPSTracker extends Service implements LocationListener
 	public void showSettingsAlert()
 	{
 		AlertDialog.Builder alertDialog = new AlertDialog.Builder(_context);
-
 		alertDialog.setTitle("GPS is settings");
-
 		alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
-
 		alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener()
 		{
 
@@ -160,7 +148,6 @@ public class GPSTracker extends Service implements LocationListener
 				_context.startActivity(intent);
 			}
 		});
-
 		alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener()
 		{
 
@@ -170,7 +157,6 @@ public class GPSTracker extends Service implements LocationListener
 				dialog.cancel();
 			}
 		});
-
 		alertDialog.show();
 	}
 
@@ -178,34 +164,26 @@ public class GPSTracker extends Service implements LocationListener
 	public void onLocationChanged(Location location)
 	{
 		Log.i(LOG_TAG, "Location Changed to " + location.toString());
+		if (_progressBar != null && _textViewLocation != null && _textViewAddress != null)
+			updateTextViews(location);
+	}
+
+	public void updateTextViews(Location location)
+	{
 		new GetAddressFromLocationTask(_context, _textViewAddress, _progressBar).execute(location);
 		_textViewLocation.setText("Latitude: " + location.getLatitude() + "\nLongitude: " + location.getLongitude());
 	}
 
 	@Override
-	public void onProviderDisabled(String arg0)
-	{
-	}
+	public void onProviderDisabled(String arg0) {}
 
 	@Override
-	public void onProviderEnabled(String arg0)
-	{
-
-
-	}
+	public void onProviderEnabled(String arg0) {}
 
 	@Override
-	public void onStatusChanged(String arg0, int arg1, Bundle arg2)
-	{
-
-
-	}
+	public void onStatusChanged(String arg0, int arg1, Bundle arg2) {}
 
 	@Override
-	public IBinder onBind(Intent intent)
-	{
-
-		return null;
-	}
+	public IBinder onBind(Intent intent) {return null;}
 
 }

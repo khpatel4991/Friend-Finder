@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -62,15 +61,19 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		switch (position)
 		{
 			case 0:
-			case 1:
 			{
 				fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1)).commit();
 				break;
 			}
+			case 1:
+			{
+				fragmentManager.beginTransaction().replace(R.id.container, new CheckinsFragment()).commit();
+				break;
+			}
 			case 2:
 			{
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.replace(R.id.container, new MapsFragment()).commit();
+				fragmentManager.beginTransaction().replace(R.id.container, new MapsFragment()).commit();
+				break;
 			}
 		}
 	}
@@ -139,11 +142,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		 * fragment.
 		 */
 		private static final String ARG_SECTION_NUMBER = "section_number";
+		GPSTracker gps;
 		//LocationDbHelper _dbHelper = new LocationDbHelper(getActivity());
 
-		public PlaceholderFragment()
-		{
-		}
+		public PlaceholderFragment() {}
 
 		/**
 		 * Returns a new instance of this fragment for the given section
@@ -166,7 +168,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 			ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.address_progress);
 			TextView textViewLocation = (TextView) rootView.findViewById(R.id.textLocation);
 			TextView textViewAddress = (TextView) rootView.findViewById(R.id.textAddress);
-			GPSTracker gps = new GPSTracker(getActivity(), textViewLocation, textViewAddress, progressBar);
+			gps = new GPSTracker(getActivity(), textViewLocation, textViewAddress, progressBar);
 			Button button_save = (Button) rootView.findViewById(R.id.button_save);
 			final double latitude, longitude;
 			if (gps.canGetLocation())
@@ -195,6 +197,14 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 			return rootView;
 		}
+
+		@Override
+		public void onDestroyView()
+		{
+			super.onDestroyView();
+			gps.stopUsingGPS();
+		}
+
 		@Override
 		public void onAttach(Activity activity)
 		{

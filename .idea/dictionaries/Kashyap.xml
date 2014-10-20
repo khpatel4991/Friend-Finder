@@ -5,7 +5,10 @@
       <w>checkins</w>
       <w>entryid</w>
       <w>friendfinder</w>
+      <w>listview</w>
       <w>textview</w>
+      <w>textviews</w>
+      <w>yyyy</w>
     </words>
   </dictionary>
 </component>
