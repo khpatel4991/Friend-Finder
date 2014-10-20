@@ -4,15 +4,24 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.phone.kashyap.friendfinder.data.LocationContract;
+import com.phone.kashyap.friendfinder.data.LocationDbHelper;
 
 
 public class MainActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks
@@ -47,8 +56,23 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public void onNavigationDrawerItemSelected(int position)
 	{
 		// update the main content by replacing fragments
+		Log.d(LOG_TAG, "onNavigationDrawerItemSelected = " + String.valueOf(position));
 		FragmentManager fragmentManager = getFragmentManager();
-		fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1)).commit();
+
+		switch (position)
+		{
+			case 0:
+			case 1:
+			{
+				fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1)).commit();
+				break;
+			}
+			case 2:
+			{
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.replace(R.id.container, new MapsFragment()).commit();
+			}
+		}
 	}
 
 	public void onSectionAttached(int number)
@@ -59,10 +83,10 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 				mTitle = getString(R.string.title_location);
 				break;
 			case 2:
-				mTitle = getString(R.string.title_section2);
+				mTitle = getString(R.string.title_location_history);
 				break;
 			case 3:
-				mTitle = getString(R.string.title_section3);
+				mTitle = getString(R.string.title_map);
 				break;
 		}
 	}
@@ -115,6 +139,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		 * fragment.
 		 */
 		private static final String ARG_SECTION_NUMBER = "section_number";
+		//LocationDbHelper _dbHelper = new LocationDbHelper(getActivity());
 
 		public PlaceholderFragment()
 		{
@@ -137,30 +162,44 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 		{
 			View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+			final LocationDbHelper locationDbHelper = new LocationDbHelper(getActivity());
 			ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.address_progress);
 			TextView textViewLocation = (TextView) rootView.findViewById(R.id.textLocation);
 			TextView textViewAddress = (TextView) rootView.findViewById(R.id.textAddress);
 			GPSTracker gps = new GPSTracker(getActivity(), textViewLocation, textViewAddress, progressBar);
-
-
+			Button button_save = (Button) rootView.findViewById(R.id.button_save);
+			final double latitude, longitude;
 			if (gps.canGetLocation())
 			{
-				double latitude = gps.getLatitude();
-				double longitude = gps.getLongitude();
+				latitude = gps.getLatitude();
+				longitude = gps.getLongitude();
 				textViewLocation.setText("Latitude: " + latitude + "\nLongitude: " + longitude);
 				new GetAddressFromLocationTask(getActivity(), textViewAddress, progressBar).execute(gps.location);
+
+
+				button_save.setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View view)
+					{
+						SQLiteDatabase db = locationDbHelper.getWritableDatabase();
+						ContentValues values = new ContentValues();
+						values.put(LocationContract.LocationEntry.COLUMN_LATITUDE, latitude);
+						values.put(LocationContract.LocationEntry.COLUMN_LONGITUDE, longitude);
+						long newRowId = db.insert(LocationContract.LocationEntry.TABLE_NAME, null, values);
+						Toast.makeText(getActivity(), String.valueOf(newRowId), Toast.LENGTH_SHORT).show();
+						db.close();
+					}
+				});
 			} else gps.showSettingsAlert();
 
 			return rootView;
 		}
-
 		@Override
 		public void onAttach(Activity activity)
 		{
 			super.onAttach(activity);
 			((MainActivity) activity).onSectionAttached(getArguments().getInt(ARG_SECTION_NUMBER));
 		}
-
 	}
-
 }
