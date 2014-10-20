@@ -21,8 +21,8 @@ import android.widget.TextView;
 public class GPSTracker extends Service implements LocationListener
 {
 	private static final String LOG_TAG = GPSTracker.class.getSimpleName();
-	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 20;    //Meters
-	private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;    //1 Minute
+	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;    //Meters
+	private static final long MIN_TIME_BW_UPDATES = 0;    //1 Minute
 	private final Context _context;
 	private final TextView _textViewLocation;
 	private final TextView _textViewAddress;
