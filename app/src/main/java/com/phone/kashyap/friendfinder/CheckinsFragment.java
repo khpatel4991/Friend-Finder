@@ -1,6 +1,7 @@
 package com.phone.kashyap.friendfinder;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -22,6 +23,7 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 {
 	private static final String[] PROJECTION = new String[]{LocationContract.LocationEntry.COLUMN_ID, LocationContract.LocationEntry.COLUMN_LATITUDE, LocationContract.LocationEntry.COLUMN_LONGITUDE, LocationContract.LocationEntry.COLUMN_CHECKIN_TIME};
 	private static LocationDbHelper locationDbHelper;
+	private static FragmentManager fragmentManager;
 	private AbsListView mListView;
 	private SimpleCursorAdapter _adapter;
 	private SQLiteDatabase _db;
@@ -34,6 +36,7 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 		super.onCreate(savedInstanceState);
 		locationDbHelper = new LocationDbHelper(getActivity());
 		_db = locationDbHelper.getReadableDatabase();
+		fragmentManager = getFragmentManager();
 		//TODO: Create progressbar till db loads
 	}
 
@@ -60,6 +63,12 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 	public void onDestroyView()
 	{
 		super.onDestroyView();
+		//fragmentManager.beginTransaction().remove(fragmentManager.findFragmentById(R.id.listview_checkins)).commit();
+		if (_adapter != null && _db != null)
+		{
+			_adapter = null;
+			_db = null;
+		}
 	}
 
 	/**
