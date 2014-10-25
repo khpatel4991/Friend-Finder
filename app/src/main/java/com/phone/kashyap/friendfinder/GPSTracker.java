@@ -21,8 +21,8 @@ import android.widget.TextView;
 public class GPSTracker extends Service implements LocationListener
 {
 	private static final String LOG_TAG = GPSTracker.class.getSimpleName();
-	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;    //Meters
-	private static final long MIN_TIME_BW_UPDATES = 0;    //1 Minute
+	private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;    //Meters
+	private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;    //1 Minute
 	private final Context _context;
 	private final TextView _textViewLocation;
 	private final TextView _textViewAddress;
@@ -55,7 +55,6 @@ public class GPSTracker extends Service implements LocationListener
 
 	private Location getLocation()
 	{
-		Log.i(LOG_TAG, "getLocation()");
 		try
 		{
 			locationManager = (LocationManager) _context.getSystemService(LOCATION_SERVICE);
@@ -112,6 +111,7 @@ public class GPSTracker extends Service implements LocationListener
 			locationManager.removeUpdates(GPSTracker.this);
 		}
 	}
+
 	public double getLatitude()
 	{
 		if (location != null)
@@ -120,6 +120,7 @@ public class GPSTracker extends Service implements LocationListener
 		}
 		return latitude;
 	}
+
 	public double getLongitude()
 	{
 		if (location != null)
@@ -128,6 +129,7 @@ public class GPSTracker extends Service implements LocationListener
 		}
 		return longitude;
 	}
+
 	public boolean canGetLocation()
 	{
 		return this.canGetLocation;
@@ -163,7 +165,7 @@ public class GPSTracker extends Service implements LocationListener
 	@Override
 	public void onLocationChanged(Location location)
 	{
-		Log.i(LOG_TAG, "Location Changed to " + location.toString());
+		Log.i(LOG_TAG, "Location Changed to Lat: " + location.getLatitude() + " Long: " + location.getLongitude());
 		if (_progressBar != null && _textViewLocation != null && _textViewAddress != null)
 			updateTextViews(location);
 	}

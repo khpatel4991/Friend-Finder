@@ -19,7 +19,7 @@ import java.util.Locale;
  */
 public class GetAddressFromLocationTask extends AsyncTask<Location, Void, String>
 {
-
+	private static final String LOG_TAG = GetAddressFromLocationTask.class.getSimpleName();
 	private final Context _context;
 	private final TextView _textview;
 	private final ProgressBar _progressBar;
@@ -53,11 +53,12 @@ public class GetAddressFromLocationTask extends AsyncTask<Location, Void, String
 				 * Return 1 address.
                  */
 			addresses = geocoder.getFromLocation(loc.getLatitude(), loc.getLongitude(), 1);
+			Log.i(LOG_TAG, "Address Retrieved Successfully.");
 		} catch (IOException e1)
 		{
-			Log.e("LocationSampleActivity", "IO Exception in getFromLocation()");
+			Log.e(LOG_TAG, "IO Exception in getFromLocation()");
 			e1.printStackTrace();
-			return ("IO Exception trying to get address");
+			return ("You are in a middle of nowhere or Google doesn't have your Address!");
 		} catch (IllegalArgumentException e2)
 		{
 			// Error message to post in the log
@@ -66,7 +67,7 @@ public class GetAddressFromLocationTask extends AsyncTask<Location, Void, String
 					" , " +
 					Double.toString(loc.getLongitude()) +
 					" passed to address service";
-			Log.e("LocationSampleActivity", errorString);
+			Log.e(LOG_TAG, errorString);
 			e2.printStackTrace();
 			return errorString;
 		}
@@ -76,7 +77,7 @@ public class GetAddressFromLocationTask extends AsyncTask<Location, Void, String
 			// Get the first address
 			Address address = addresses.get(0);
 				/*
-                 * Format the first line of address (if available),
+				 * Format the first line of address (if available),
                  * city, and country name.
                  */
 			String addressText = String.format("%s, %s, %s",
@@ -98,5 +99,4 @@ public class GetAddressFromLocationTask extends AsyncTask<Location, Void, String
 		_progressBar.setVisibility(View.GONE);
 		_textview.setText(address);
 	}
-
 }

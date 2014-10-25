@@ -28,14 +28,7 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 
 
 	private static final String LOG_TAG = MainActivity.class.getSimpleName();
-	/**
-	 * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-	 */
 	private NavigationDrawerFragment mNavigationDrawerFragment;
-
-	/**
-	 * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-	 */
 	private CharSequence mTitle;
 
 	@Override
@@ -55,23 +48,25 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 	public void onNavigationDrawerItemSelected(int position)
 	{
 		// update the main content by replacing fragments
-		Log.d(LOG_TAG, "onNavigationDrawerItemSelected = " + String.valueOf(position));
 		FragmentManager fragmentManager = getFragmentManager();
 
 		switch (position)
 		{
 			case 0:
 			{
+				Log.i(LOG_TAG, "Fragment for Location");
 				fragmentManager.beginTransaction().replace(R.id.container, PlaceholderFragment.newInstance(position + 1)).commit();
 				break;
 			}
 			case 1:
 			{
+				Log.i(LOG_TAG, "Fragment for Checkins");
 				fragmentManager.beginTransaction().replace(R.id.container, new CheckinsFragment()).commit();
 				break;
 			}
 			case 2:
 			{
+				Log.i(LOG_TAG, "Fragment for Map");
 				fragmentManager.beginTransaction().replace(R.id.container, new MapsFragment()).commit();
 				break;
 			}
@@ -189,7 +184,8 @@ public class MainActivity extends Activity implements NavigationDrawerFragment.N
 						values.put(LocationContract.LocationEntry.COLUMN_LATITUDE, latitude);
 						values.put(LocationContract.LocationEntry.COLUMN_LONGITUDE, longitude);
 						long newRowId = db.insert(LocationContract.LocationEntry.TABLE_NAME, null, values);
-						Toast.makeText(getActivity(), String.valueOf(newRowId), Toast.LENGTH_SHORT).show();
+						Log.i(LOG_TAG, "New Checkin stored in DB with _id = " + String.valueOf(newRowId));
+						Toast.makeText(getActivity(), "New Checkin registered in DB", Toast.LENGTH_SHORT).show();
 						db.close();
 					}
 				});

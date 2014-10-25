@@ -37,7 +37,6 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 		locationDbHelper = new LocationDbHelper(getActivity());
 		_db = locationDbHelper.getReadableDatabase();
 		fragmentManager = getFragmentManager();
-		//TODO: Create progressbar till db loads
 	}
 
 	@Override
@@ -52,10 +51,7 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 				// the textviews to fill with the data pulled from the columns above
 				new int[]{R.id.list_item_id_textview, R.id.list_item_latitude_textview, R.id.list_item_longitude_textview, R.id.list_item_date_textview}, 0);
 
-		//_adapter.bindView(rootView, getActivity(), c);
 		listView.setAdapter(_adapter);
-		//getLoaderManager().initLoader(0, null, this);
-
 		return rootView;
 	}
 
@@ -63,7 +59,6 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 	public void onDestroyView()
 	{
 		super.onDestroyView();
-		//fragmentManager.beginTransaction().remove(fragmentManager.findFragmentById(R.id.listview_checkins)).commit();
 		if (_adapter != null && _db != null)
 		{
 			_adapter = null;
@@ -106,5 +101,4 @@ public class CheckinsFragment extends Fragment implements LoaderManager.LoaderCa
 	{
 
 	}
-
 }
